@@ -10,54 +10,6 @@
 (defvar elixir-smie-verbose-p nil
   "Emit context information about the current syntax state.")
 
-(defvar elixir-mode-syntax-table
-  (let ((elixir-mode-syntax-table (make-syntax-table)))
-
-    ;; Note that ?_ might be better as class "_", but either seems to
-    ;; work:
-    (modify-syntax-entry ?_ "w" elixir-mode-syntax-table)
-    (modify-syntax-entry ?? "w" elixir-mode-syntax-table)
-
-    (modify-syntax-entry ?' "\"" elixir-mode-syntax-table)
-    (modify-syntax-entry ?# "<" elixir-mode-syntax-table)
-    (modify-syntax-entry ?\n ">" elixir-mode-syntax-table)
-    (modify-syntax-entry ?\( "()" elixir-mode-syntax-table)
-    (modify-syntax-entry ?\) ")(" elixir-mode-syntax-table)
-    (modify-syntax-entry ?\{ "(}" elixir-mode-syntax-table)
-    (modify-syntax-entry ?\} "){" elixir-mode-syntax-table)
-    (modify-syntax-entry ?\[ "(]" elixir-mode-syntax-table)
-    (modify-syntax-entry ?\] ")[" elixir-mode-syntax-table)
-    (modify-syntax-entry ?\: "'" elixir-mode-syntax-table)
-    (modify-syntax-entry ?\@ "'" elixir-mode-syntax-table)
-    elixir-mode-syntax-table)
-  "Elixir mode syntax table.")
-
-(defun elixir-syntax-propertize (start end)
-  (save-excursion
-    (goto-char start)
-    ;; The ? character on its own is supposed to escape whatever comes
-    ;; after it (including any escaped chars. Examples: ?\# and ?".
-    (while (search-forward "?" end t)
-      (let ((start (1- (point))))
-        (unless (or (= (char-syntax (char-before (- (point) 1))) ?w)
-                    (= (char-syntax (char-before (- (point) 1))) ?_))
-          (put-text-property (1- (point))
-                             (point)
-                             'syntax-table
-                             '(?|))
-          (when (= (char-after) ?\\)
-            (forward-char)
-            (put-text-property (1- (point))
-                               (point)
-                               'syntax-table
-                               '(?\s)))
-          (forward-char)
-          (put-text-property (1- (point))
-                             (point)
-                             'syntax-table
-                             '(?|))
-          (put-text-property start (point) 'font-lock-face 'font-lock-string-face))))))
-
 (defmacro elixir-smie-debug (message &rest format-args)
   `(progn
      (when elixir-smie-verbose-p

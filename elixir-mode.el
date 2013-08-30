@@ -142,7 +142,8 @@
 (require 'comint)       ; for interactive REPL
 (require 'easymenu)     ; for menubar features
 
-(require 'elixir-smie)  ; syntax and indentation support
+(require 'elixir-syntax)  ; char-level syntax support
+(require 'elixir-smie)    ; indentation support
 
 (defvar elixir-mode--version "1.3.0")
 
